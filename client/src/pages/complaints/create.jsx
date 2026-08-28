@@ -16,6 +16,7 @@ const CreateComplaintPage = () => {
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -26,14 +27,19 @@ const CreateComplaintPage = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoadingCategories(true);
       try {
         const res = await api.get('/categories?isActive=true');
-        setCategories(res.data || []);
-        if (res.data && res.data.length > 0) {
-          setCategory(res.data[0]._id);
+        const catList = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        setCategories(catList);
+        if (catList.length > 0) {
+          setCategory(catList[0]._id);
         }
       } catch (err) {
         console.error('Failed to load categories:', err);
+        setError('Failed to load categories. Please check your backend connection.');
+      } finally {
+        setLoadingCategories(false);
       }
     };
     fetchCategories();
@@ -54,8 +60,13 @@ const CreateComplaintPage = () => {
     e.preventDefault();
     setError('');
 
-    if (!title.trim() || !description.trim() || !category) {
-      setError('Please fill in all required fields');
+    if (!title.trim() || !description.trim()) {
+      setError('Please fill in all required fields (Title and Description)');
+      return;
+    }
+
+    if (!category) {
+      setError('Please select a valid complaint category');
       return;
     }
 
@@ -134,14 +145,29 @@ const CreateComplaintPage = () => {
               required
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-slate-800/80 border border-slate-700/70 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition"
+              disabled={loadingCategories || categories.length === 0}
+              className="w-full bg-slate-800/80 border border-slate-700/70 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition disabled:opacity-50"
             >
-              {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
+              {loadingCategories ? (
+                <option value="">Loading categories...</option>
+              ) : categories.length === 0 ? (
+                <option value="">No categories available</option>
+              ) : (
+                <>
+                  <option value="" disabled>-- Select a Category --</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
+            {categories.find((c) => c._id === category)?.description && (
+              <p className="text-[11px] text-slate-400 mt-1.5 font-normal">
+                {categories.find((c) => c._id === category).description}
+              </p>
+            )}
           </div>
 
           <div>

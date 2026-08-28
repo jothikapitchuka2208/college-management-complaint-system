@@ -1,4 +1,5 @@
 const logger = require('../utils/logger');
+const env = require('../config/env');
 
 // Custom API Error class
 class ApiError extends Error {

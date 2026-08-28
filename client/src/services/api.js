@@ -7,6 +7,8 @@ const api = axios.create({
   },
 });
 
+
+
 // Request interceptor: attach token
 api.interceptors.request.use(
   (config) => {
@@ -34,7 +36,7 @@ api.interceptors.response.use(
       error.response?.data?.message ||
       error.message ||
       'An unexpected network error occurred';
-    
+
     // Auto logout on 401 token invalid
     if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
       localStorage.removeItem('ccms_auth');

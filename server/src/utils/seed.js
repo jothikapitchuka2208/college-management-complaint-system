@@ -261,4 +261,17 @@ const seedData = async () => {
   }
 };
 
+if (require.main === module) {
+  seedData()
+    .then(() => {
+      console.log('[Seed] Seeding completed successfully.');
+      mongoose.disconnect();
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('[Seed] Seeding failed:', err);
+      process.exit(1);
+    });
+}
+
 module.exports = seedData;

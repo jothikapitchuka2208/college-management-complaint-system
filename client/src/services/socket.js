@@ -9,7 +9,8 @@ export const initSocket = (token) => {
     return socket;
   }
 
-  socket = io(window.location.origin, {
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  socket = io(socketUrl, {
     auth: { token },
     transports: ['websocket', 'polling'],
   });

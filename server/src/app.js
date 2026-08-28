@@ -26,7 +26,16 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 // CORS configuration
 app.use(
   cors({
-    origin: env.clientUrl || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl) or any localhost port
+      if (!origin || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      if (env.clientUrl && origin === env.clientUrl) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -71,6 +80,7 @@ app.use('/api/reports', reportRoutes);
 
 // Fallback 404 handler
 app.use((req, res, next) => {
+  console.warn(`[404 NOT FOUND] ${req.method} ${req.originalUrl}`);
   res.status(404).json({
     success: false,
     message: `API endpoint not found: ${req.method} ${req.originalUrl}`,

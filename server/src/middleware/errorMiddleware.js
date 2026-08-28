@@ -71,9 +71,10 @@ const errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).json({
     success: false,
-    message,
+    message: env.nodeEnv === 'development' && statusCode === 500 ? (err.message || message) : message,
     errorCode,
     errors,
+    ...(env.nodeEnv === 'development' && statusCode === 500 ? { stack: err.stack, details: String(err) } : {}),
   });
 };
 

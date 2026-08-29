@@ -11,7 +11,9 @@ export const initSocket = (token) => {
 
   const socketUrl =
     import.meta.env.VITE_SOCKET_URL ||
-    (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+      ? 'https://college-management-complaint-system-4.onrender.com'
+      : typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
       ? window.location.origin
       : 'http://localhost:5000');
   socket = io(socketUrl, {

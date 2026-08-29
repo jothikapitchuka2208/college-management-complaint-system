@@ -3,6 +3,9 @@ import axios from 'axios';
 const getBaseUrl = () => {
   let url = import.meta.env.VITE_API_URL;
   if (!url || url === 'undefined') {
+    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+      return 'https://college-management-complaint-system-4.onrender.com/api';
+    }
     return '/api';
   }
   url = url.trim().replace(/\/+$/, '');

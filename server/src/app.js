@@ -82,7 +82,9 @@ app.use('/api/reports', reportRoutes);
 // Serve static frontend in production if client/dist exists
 const clientDistCandidates = [
   path.join(__dirname, '../../client/dist'),
+  path.join(__dirname, '../public'),
   path.join(process.cwd(), 'client/dist'),
+  path.join(process.cwd(), 'public'),
   path.join(process.cwd(), '../client/dist'),
 ];
 

@@ -80,8 +80,16 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportRoutes);
 
 // Serve static frontend in production if client/dist exists
-const clientDistPath = path.join(__dirname, '../../client/dist');
-if (fs.existsSync(clientDistPath)) {
+const clientDistCandidates = [
+  path.join(__dirname, '../../client/dist'),
+  path.join(process.cwd(), 'client/dist'),
+  path.join(process.cwd(), '../client/dist'),
+];
+
+const clientDistPath = clientDistCandidates.find((dir) => fs.existsSync(dir) && fs.existsSync(path.join(dir, 'index.html')));
+
+if (clientDistPath) {
+  console.log(`[Frontend] Serving production client build from: ${clientDistPath}`);
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
     if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/uploads')) {
@@ -89,6 +97,8 @@ if (fs.existsSync(clientDistPath)) {
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
+} else {
+  console.warn('[Frontend Warning] client/dist build directory not found. If you want Render to serve the React frontend, ensure your Render Build Command is set to "npm install && npm run build".');
 }
 
 // Fallback 404 handler

@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "start": "npm run start --prefix server",
+    "postinstall": "npm run build --prefix client",
     "dev": "npm run dev --prefix client",
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",

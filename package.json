@@ -7,6 +7,7 @@
     "server"
   ],
   "scripts": {
+    "start": "npm run start --prefix server",
     "dev": "npm run dev --prefix client",
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",
